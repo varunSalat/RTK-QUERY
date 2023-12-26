@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+const formData = { name: "", email: "" };
 const initialState = {
-  title: "",
-  email: "",
+  formData,
 };
 const studentSlice = createSlice({
   name: "students",
@@ -9,9 +9,14 @@ const studentSlice = createSlice({
   reducers: {
     handleInputChange: (state, { payload }) => {
       const { name, value } = payload;
-      console.log(name, value);
+      const formData = { ...state.formData };
+      const updatedFormData = { ...formData, [name]: value };
+      state.formData = updatedFormData;
+    },
+    clearAllInputs: (state) => {
+      state.formData = formData;
     },
   },
 });
-export const { handleInputChange } = studentSlice.actions;
+export const { handleInputChange, clearAllInputs } = studentSlice.actions;
 export default studentSlice.reducer;
