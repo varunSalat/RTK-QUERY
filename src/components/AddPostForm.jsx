@@ -1,11 +1,24 @@
-import { useDispatch } from "react-redux";
-import { handleInputChange } from "../store/features/studentsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  clearAllInputs,
+  handleInputChange,
+} from "../store/features/studentsSlice";
+import { useAddStudentsMutation } from "../store/apis/studentsAPI";
 
 const AddPostForm = () => {
   const dispatch = useDispatch();
-  const handleSubmit = (e) => {
+  const { formData } = useSelector((state) => state.students);
+  const [addStudentAPI, addStudentRes] = useAddStudentsMutation();
+  const { isLoading } = addStudentRes;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    await addStudentAPI(formData);
+    dispatch(clearAllInputs());
   };
+
+  console.log(isLoading);
+
   return (
     <div>
       <form
@@ -29,11 +42,13 @@ const AddPostForm = () => {
                       }),
                     )
                   }
+                  required
+                  value={formData.name}
                   type="text"
                   id="contact-form-name"
                   className=" w-full flex-1 appearance-none rounded-lg border border-gray-300 border-transparent bg-white px-4 py-2 text-base text-gray-700 placeholder-gray-400 shadow-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  placeholder="title"
-                  name="title"
+                  placeholder="Name"
+                  name="name"
                 />
               </div>
             </div>
@@ -48,10 +63,12 @@ const AddPostForm = () => {
                       }),
                     )
                   }
+                  required
+                  value={formData.email}
                   type="email"
                   id="contact-form-name"
                   className=" w-full flex-1 appearance-none rounded-lg border border-gray-300 border-transparent bg-white px-4 py-2 text-base text-gray-700 placeholder-gray-400 shadow-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  placeholder="title"
+                  placeholder="Email Address"
                   name="email"
                 />
               </div>
@@ -60,9 +77,14 @@ const AddPostForm = () => {
             <div className="col-span-2 text-right">
               <button
                 type="submit"
-                className="w-full rounded-lg  bg-indigo-600 px-4 py-2 text-center text-base font-semibold text-white shadow-md transition duration-200 ease-in hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2  focus:ring-offset-indigo-200 "
+                disabled={isLoading}
+                className={`w-full rounded-lg ${
+                  isLoading ? "bg-gray-600" : "bg-indigo-600"
+                } px-4 py-2 text-center text-base font-semibold text-white shadow-md transition duration-200 ease-in hover:bg-${
+                  isLoading ? "" : "indigo-700"
+                } focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2  focus:ring-offset-indigo-200`}
               >
-                Send
+                {isLoading ? "Sending" : "Send"}
               </button>
             </div>
           </div>

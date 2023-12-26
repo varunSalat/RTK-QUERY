@@ -7,9 +7,31 @@ const studentsAPI = createApi({
   endpoints: (builder) => ({
     getStudents: builder.query({
       query: () => "/students",
+      providesTags: ["getStudents"],
+      transformResponse: (response) => {
+        return response.reverse();
+      },
+    }),
+    addStudents: builder.mutation({
+      query: (studentData) => ({
+        url: "/students",
+        method: "POST",
+        body: studentData,
+      }),
+      invalidatesTags: ["getStudents"],
+    }),
+    deleteStudent: builder.mutation({
+      query: (id) => ({
+        url: `/students/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["getStudents"],
     }),
   }),
 });
-
-export const { useGetStudentsQuery } = studentsAPI;
+export const {
+  useGetStudentsQuery,
+  useAddStudentsMutation,
+  useDeleteStudentMutation,
+} = studentsAPI;
 export default studentsAPI;
